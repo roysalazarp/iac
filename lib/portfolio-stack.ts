@@ -5,6 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { readFileSync } from 'fs';
 import { PortfolioStackProps } from "../bin/cdk";
+import * as fs from 'fs';
 
 /*
   ----- Application architecture -----
@@ -20,14 +21,14 @@ export class PortfolioStack extends Stack {
 
   constructor(scope: Construct, id: string, props: PortfolioStackProps) {
     super(scope, id, props);
-    
     this.stackProps = props
 
     const vpc = this.createVpc()
     const securityGroup = this.createSecurityGroup(vpc)
     const webServerRole = this.createWebServerRole()
     const machineImage = this.defineMachineImage()
-    const ec2Instance = this.createEc2Instance(vpc, securityGroup, webServerRole, machineImage)
+    const keyPair = this.transferKeyPair()
+    const ec2Instance = this.createEc2Instance(vpc, securityGroup, webServerRole, machineImage, keyPair)
     this.createElasticIP(ec2Instance)
     this.createS3Bucket()
   }
@@ -89,12 +90,22 @@ export class PortfolioStack extends Stack {
     )
     return machineImage
   }
-
+  private transferKeyPair(): ec2.CfnKeyPair {
+    const keyName = `${this.stackProps.projectName}-ec2-key-pair`
+    const publicKeyMaterial = fs.readFileSync(`./secrets/${keyName}.pub`).toString()
+    // this might fail of keypair already exists.
+    return new ec2.CfnKeyPair(this, this.stackProps.keyPairId , {
+      keyName,
+      keyType: 'rsa',
+      publicKeyMaterial
+    });
+  }
   private createEc2Instance(
     vpc: ec2.Vpc, 
     webServerSecurityGroup: ec2.SecurityGroup,
     webServerRole: iam.Role, 
     machineImage: ec2.IMachineImage, 
+    keyPair: ec2.CfnKeyPair, 
   ): ec2.Instance {
     const ec2Instance = new ec2.Instance(this, this.stackProps.ec2InstanceId, {
       vpc,
@@ -105,7 +116,7 @@ export class PortfolioStack extends Stack {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
       // If a key with that name does not exist in your default AWS region, 
       // you will get an error when trying to deploy the EC2 instance.
-      keyName: `${this.stackProps.projectName}-ec2-key-pair`,
+      keyName: keyPair.keyName,
       machineImage: machineImage,
       securityGroup: webServerSecurityGroup,
     });
@@ -129,7 +140,7 @@ export class PortfolioStack extends Stack {
   private createS3Bucket(): void {
     new s3.Bucket(this, this.stackProps.s3BucketId, {
       publicReadAccess: false,
-      bucketName: this.stackProps.projectName
+      bucketName: this.stackProps.s3BucketName
     });
   }
 }

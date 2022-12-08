@@ -9,7 +9,9 @@ export interface PortfolioStackProps extends cdk.StackProps {
   webServerSecurityGroupId: string;
   webServerRoleId: string;
   ec2InstanceId: string;
+  keyPairId: string,
   s3BucketId: string;
+  s3BucketName: string;
   elasticIpId: string;
   ec2ElasticIpAssociationId: string;
 }
@@ -25,8 +27,10 @@ const props: PortfolioStackProps = {
   publicSubnetName: prefx,
   webServerSecurityGroupId: `${prefx}WebServerSecurityGroup`,
   webServerRoleId: `${prefx}WebServerRole`,
+  keyPairId: `${prefx}KeyPair`,
   ec2InstanceId: `${prefx}EC2Instance`,
   s3BucketId: `${prefx}S3Bucket`,
+  s3BucketName: `${prefx.toLowerCase()}-roy-salazar`,
   elasticIpId: `${prefx}ElasticIp`,
   ec2ElasticIpAssociationId: `${prefx}EC2ElasticIpAssociation`,
 }
