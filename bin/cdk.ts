@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import { PortfolioStack } from '../lib/portfolio-stack';
+import { ProjectStack } from '../lib/project-stack';
 
-export interface PortfolioStackProps extends cdk.StackProps {
+export interface ProjectStackProps extends cdk.StackProps {
   projectName: string;
   vpcId: string;
   publicSubnetName: string;
@@ -18,22 +18,22 @@ export interface PortfolioStackProps extends cdk.StackProps {
 
 const env = {};
 
-const prefx = "Portfolio"
+const prefx = "Project"
 
-const props: PortfolioStackProps = {
+const props: ProjectStackProps = {
   ...env,
-  projectName: 'portfolio',
-  vpcId: 'PersonalProjectsVpc',
+  projectName: 'project',
+  vpcId: 'MyVpc',
   publicSubnetName: prefx,
   webServerSecurityGroupId: `${prefx}WebServerSecurityGroup`,
   webServerRoleId: `${prefx}WebServerRole`,
   keyPairId: `${prefx}KeyPair`,
   ec2InstanceId: `${prefx}EC2Instance`,
   s3BucketId: `${prefx}S3Bucket`,
-  s3BucketName: `${prefx.toLowerCase()}-roy-salazar`,
+  s3BucketName: `my-${prefx.toLowerCase()}`,
   elasticIpId: `${prefx}ElasticIp`,
   ec2ElasticIpAssociationId: `${prefx}EC2ElasticIpAssociation`,
 }
 
 const app = new cdk.App();
-new PortfolioStack(app, 'PortfolioStack', props);
+new ProjectStack(app, 'ProjectStack', props);

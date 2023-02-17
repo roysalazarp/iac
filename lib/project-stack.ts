@@ -4,22 +4,13 @@ import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { readFileSync } from 'fs';
-import { PortfolioStackProps } from "../bin/cdk";
+import { ProjectStackProps } from "../bin/cdk";
 import * as fs from 'fs';
 
-/*
-  ----- Application architecture -----
-  We will use 1 server to run the whole application.
-  The application contains multiple docker containers.
-    - Nginx reverse proxy container (router traffic)
-    - Frontend Nginx container (serve frontend code)
-    - Backend container (serve backend code)
-    - Database container (run postgres database)
-*/
-export class PortfolioStack extends Stack {
-  private stackProps: PortfolioStackProps;
+export class ProjectStack extends Stack {
+  private stackProps: ProjectStackProps;
 
-  constructor(scope: Construct, id: string, props: PortfolioStackProps) {
+  constructor(scope: Construct, id: string, props: ProjectStackProps) {
     super(scope, id, props);
     this.stackProps = props
 

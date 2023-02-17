@@ -1,5 +1,5 @@
 ## IAC - Infrastructure as code
 
-This AWS CDK project provisions a server in which are hosted all my portfolio related projects.
+This AWS CDK project provisions a symple web server setup.
 
-![App Screenshot](./portfolio_iac_diagram.png)
+![App Screenshot](./iac_diagram.png)
